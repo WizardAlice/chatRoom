@@ -1,3 +1,4 @@
+import './style.scss'
 import $ from 'jquery'
 
 var ws = new WebSocket('ws://localhost:8181/')
@@ -41,6 +42,50 @@ function addSecretContent(content){
   $('#secret-talk').append("<p>"+content+"</p>")
 }
 
+document.addEventListener('copy', (e) => {
+  debugger
+  e.clipboardData.setData('text/plain', 'Hello, world!');
+  e.preventDefault()
+})
+
 document.getElementById('messageToAll').addEventListener('click', ()=> sendMess('messageToAll', 'counter'), false)
 document.getElementById('changeName').addEventListener('click', ()=> sendMess('changeName', 'name'), false)
 document.getElementById('messageToOne').addEventListener('click', ()=> sendMess('messageToOne', 'secret', $('#onlines').val()), false)
+
+// $.post('http://localhost:8080/teststatus',{
+//   name: "wangtong"
+// },(res)=>{
+//   debugger
+//   return -1
+// })
+
+$.ajax({
+  headers: {
+    'Cache-Control': 'no-catch'
+  },
+  type: "POST",
+  url: 'http://localhost:8080/teststatus',
+  data: JSON.stringify({name: "wangtong"}),
+  success: (res)=> alert(res)
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

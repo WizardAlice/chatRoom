@@ -1,12 +1,54 @@
-var express = require('express'), //引入express模块
+const express = require('express'), //引入express模块
     app = express(),
-    server = require('http').createServer(app);
+    server = require('http').createServer(app),
+    logger = require('morgan'),
+    bodyParser = require('body-parser'),
+    { getToken, getIndex } = require('./methods');
 //     io = require('socket.io')(require('http'));
 
-app.use('/index', (req, res) => res.sendFile(__dirname + '/WebSocket.html')); //指定静态HTML文件的位置
-server.listen(8080);
+app.use(logger())
 
-app.use(express.static('dist'));
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+app.use(express.static('dist'))
+app.use('/index', (req, res) => {
+  // res.header('refresh', '5;url=http://localhost:8080/teststatus')
+  res.sendFile(__dirname + '/WebSocket.html')
+}); //指定静态HTML文件的位置  
+
+// app.get('/index', (req, res) => {
+//   getIndex(req, res, ()=>res.send(401) )
+// })
+
+
+app.all('*', function(req, res, next) {//开发模式下允许跨域访问
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,X-Requested-With');
+    next();
+})
+
+app.post('/login', (req, res)=>{ //测试登录，返回一个token
+  if(req.body.user == 'wangtong' && req.body.pwd == '123456'){
+    getToken('wangtong', res)
+  }else{
+    res.send(401)
+  }
+})
+
+app.post('/teststatus', (req, res) => {
+  res.send(302)
+})
+
+app.get('/teststatus', (req, res) => {
+  res.send("nihao")
+})
+
+server.listen(8080, ()=>{
+  console.log('后端接口8080端口')
+})
+
 // io.on('connection', (socket) => {
 //  console.log(socket)
 // })
